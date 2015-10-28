@@ -86,7 +86,7 @@ class module_controller extends ctrl_module
 		openssl_csr_export($csr, $csrout);
 		openssl_pkey_export($privkey, $pkeyout, $password);
 		
-		openssl_pkey_export_to_file($privkey, "/var/sentora/hostdata/". $currentuser["username"] ."/key/".$domain.".key");
+		openssl_pkey_export_to_file($privkey, ctrl_options::GetSystemOption('hosted_dir'). $currentuser["username"] ."/key/".$domain.".key");
 		
 			$email = $address;
 			$emailsubject = "Certificate Signing Request";
@@ -101,11 +101,11 @@ class module_controller extends ctrl_module
             $phpmailer = new sys_email();
             $phpmailer->Subject = $emailsubject;
             $phpmailer->Body = $emailbody;
-			$phpmailer->AddAttachment("/var/sentora/hostdata/". $currentuser["username"] ."/key/".$domain.".key");
+			$phpmailer->AddAttachment(ctrl_options::GetSystemOption('hosted_dir'). $currentuser["username"] ."/key/".$domain.".key");
             $phpmailer->AddAddress($email);
             $phpmailer->SendEmail();
-			unlink("/var/sentora/hostdata/". $currentuser["username"] ."/key/".$domain.".key");
-			rmdir("/var/sentora/hostdata/". $currentuser["username"] ."/key/");
+			unlink(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/key/".$domain.".key");
+			rmdir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/key/");
 			self::$keyadd = true;
 			return true;
 	}
@@ -242,17 +242,17 @@ class module_controller extends ctrl_module
 		if (empty($_FILES["inkey"]["name"]) || empty($_FILES["inWCA"]["name"])) { 
 		self::$empty = true;
 		return false; }
-		if (!is_dir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/") ) {
-				mkdir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/", 0777);
+		if (!is_dir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/") ) {
+				mkdir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/", 0777);
 			}
-		if (!is_dir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/". $rootdir ."/") ) {
-				mkdir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/". $rootdir ."/", 0777);
+		if (!is_dir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/". $rootdir ."/") ) {
+				mkdir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/". $rootdir ."/", 0777);
 			} else {
 			self::$error = true;
 			return false;
 			}
 			
-			$target_dir = "/var/sentora/hostdata/". $currentuser["username"] ."/ssl/". $rootdir ."/";
+			$target_dir = ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/". $rootdir ."/";
 			
 			$uploadkey = $target_dir . $domain . ".key";
 			$uploadwcrt = $target_dir . $domain . ".crt";
@@ -349,11 +349,11 @@ class module_controller extends ctrl_module
 		$formvars = $controller->GetAllControllerRequests('FORM');
 		$rootdir = str_replace('.', '_', $domain);
 		
-		if (!is_dir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/") ) {
-				mkdir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/", 0777);
+		if (!is_dir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/") ) {
+				mkdir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/", 0777);
 			}
-		if (!is_dir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/". $rootdir ."/") ) {
-				mkdir("/var/sentora/hostdata/". $currentuser["username"] ."/ssl/". $rootdir ."/", 0777);
+		if (!is_dir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/". $rootdir ."/") ) {
+				mkdir(ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/". $rootdir ."/", 0777);
 			} else {
 			self::$error = true;
 			return false;
@@ -387,8 +387,8 @@ class module_controller extends ctrl_module
 		//openssl_x509_export($sscert, $certout);
 		//openssl_pkey_export($privkey, $pkeyout, $password);
 		
-		openssl_x509_export_to_file($sscert, "/var/sentora/hostdata/". $currentuser["username"] ."/ssl/" .$rootdir ."/". $domain .".crt");
-		openssl_pkey_export_to_file($privkey, "/var/sentora/hostdata/". $currentuser["username"] ."/ssl/" .$rootdir ."/". $domain .".key");
+		openssl_x509_export_to_file($sscert, ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/" .$rootdir ."/". $domain .".crt");
+		openssl_pkey_export_to_file($privkey, ctrl_options::GetSystemOption('hosted_dir') . $currentuser["username"] ."/ssl/" .$rootdir ."/". $domain .".key");
 			
            if($domain == ctrl_options::GetSystemOption('sentora_domain')) {
 				
@@ -488,10 +488,10 @@ class module_controller extends ctrl_module
 			static function ListSSL($uname)
 		{
 			global $controller;
-			if (!is_dir("/var/sentora/hostdata/". $uname ."/ssl/") ) {
-				mkdir("/var/sentora/hostdata/". $uname ."/ssl/", 0777);
+			if (!is_dir(ctrl_options::GetSystemOption('hosted_dir') . $uname ."/ssl/") ) {
+				mkdir( ctrl_options::GetSystemOption('hosted_dir'). $uname ."/ssl/", 0777);
 		}
-				$dir = "/var/sentora/hostdata/$uname/ssl/";
+				$dir = ctrl_options::GetSystemOption('hosted_dir') . $uname. "/ssl/";
 				if(substr($dir, -1) != "/") $dir .= "/";
 				$d = @dir($dir);
 				while(false !== ($entry = $d->read())) {
