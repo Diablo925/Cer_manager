@@ -23,5 +23,5 @@ function UpgradeModule($newversion, $module){
     $sql->execute();    
 }
 
-	UpgradeModule('100', 'Cer_manager');
+	UpgradeModule('106', 'Cer_manager');
 ?>
